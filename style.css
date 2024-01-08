@@ -38,33 +38,70 @@ main{
     display: flex;
     justify-content: flex-end;
     width: 100%;
-}
-
-#city-selector{
-    padding: 12px;
-    border-radius: 50%;
-    background-color: rgba(0, 0, 0, 0);
-    display: flex;
     align-items: center;
-    justify-content: center;
-    transition: all 0.2s ease-out;
-    cursor: pointer;
 }
 
-#city-selector svg{
-    width: 32px;
-    height: 32px;
-    margin: 0;
-    padding: 0;
-    transition: all 0.2s ease-out;
-}
+    .saved-cities{
+        display: flex;
+        width: 100%;
+        gap: 12px;
+    }
+        .saved-city-circle{
+            width: 42px;
+            height: 42px;
+            background-color: rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            text-transform: uppercase;
+            font-size: 20px;
+            font-weight: 600;
+            transition: all 0.2s ease-out;
+            cursor: pointer;
+        }
+            .saved-city-circle:hover{
+                transform: scale(1.1);
+            }
 
-#city-selector:hover{
-    background-color: rgba(0, 0, 0, 0.1);
-}
-#city-selector:hover svg{
-    transform: scale(1.2);
-}
+            .dia-0 .saved-city-circle.selected, .dia-50 .saved-city-circle.selected, .dia-100 .saved-city-circle.selected{
+                background-color: var(--card-soleada-color);
+                color: white;
+                pointer-events: none;
+            }
+
+            .noche-0 .saved-city-circle.selected, .noche-50 .saved-city-circle.selected, .noche-100 .saved-city-circle.selected{
+                background-color: var(--noche-card-color);
+                color: white;
+                pointer-events: none;
+            }
+
+    #city-selector{
+        padding: 12px;
+        border-radius: 50%;
+        background-color: rgba(0, 0, 0, 0);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease-out;
+        cursor: pointer;
+    }
+
+        #city-selector svg{
+            width: 32px;
+            height: 32px;
+            margin: 0;
+            padding: 0;
+            transition: all 0.2s ease-out;
+        }
+
+    #city-selector:hover{
+        background-color: rgba(0, 0, 0, 0.1);
+    }
+        #city-selector:hover svg{
+            transform: scale(1.2);
+        }
 
 
 
@@ -86,10 +123,12 @@ main{
 
 #cloud-1{
     position: absolute;
+    animation: floating 8s ease-in-out infinite alternate;
 }
 
 #cloud-2{
-    position: absolute; 
+    position: absolute;
+    animation: floating 8s ease-in-out infinite alternate-reverse;
 }
 
     /* dias */
@@ -108,13 +147,11 @@ main{
             top: 10%;
             left: -20%;
             width: 60%;
-            animation: floating 10s ease-in-out infinite alternate;
         }
         .dia-0 #cloud-2{
             top: 30%;
             right: -20%;
             width: 40%;
-            animation: floating 10s ease-in-out infinite alternate-reverse;
         }
         /* dia parcialmente nublado */
         .dia-50 .front-card{
@@ -128,13 +165,11 @@ main{
             top: 10%;
             left: -20%;
             width: 70%;
-            animation: floating 10s ease-in-out infinite alternate;
         }
         .dia-50 #cloud-2{
             top: 20%;
             right: -20%;
             width: 60%;
-            animation: floating 10s ease-in-out infinite alternate-reverse;
         }
         /* dia nublado */
         .dia-100 .front-card{
@@ -149,13 +184,11 @@ main{
             top: 10%;
             left: -30%;
             width: 100%;
-            animation: floating 10s ease-in-out infinite alternate;
         }
         .dia-100 #cloud-2{
             top: 20%;
             right: -30%;
             width: 100%;
-            animation: floating 10s ease-in-out infinite alternate-reverse;
         }
 
     /* noches */
@@ -183,13 +216,11 @@ main{
             top: 10%;
             left: -20%;
             width: 60%;
-            animation: floating 10s ease-in-out infinite alternate;
         }
         .noche-0 #cloud-2{
             top: 30%;
             right: -20%;
             width: 40%;
-            animation: floating 10s ease-in-out infinite alternate-reverse;
         }
         /* noche parcialmente nublada */
         .noche-50 #sun-moon{
@@ -200,13 +231,11 @@ main{
             top: 10%;
             left: -20%;
             width: 70%;
-            animation: floating 10s ease-in-out infinite alternate;
         }
         .noche-50 #cloud-2{
             top: 20%;
             right: -20%;
             width: 60%;
-            animation: floating 10s ease-in-out infinite alternate-reverse;
         }
         /* noche nublada */
         .noche-100 #sun-moon{
@@ -218,13 +247,11 @@ main{
             top: 10%;
             left: -30%;
             width: 100%;
-            animation: floating 10s ease-in-out infinite alternate;
         }
         .noche-100 #cloud-2{
             top: 20%;
             right: -30%;
             width: 100%;
-            animation: floating 10s ease-in-out infinite alternate-reverse;
         }
     
 
@@ -316,19 +343,21 @@ main{
 
         .city-item{
             display: flex;
-            padding: 24px 0 12px 0;
             font-size: 20px;
             font-weight: 600;
             border-bottom: 2px solid rgba(0,0,0,0.1);
             justify-content: space-between;
             align-items: center;
-            transition: all 0.2s ease-out;
         }
 
             .text-name{
                 display: flex;
                 align-items: center;
+                padding: 24px 0 16px 0;
                 gap: 8px;
+                transition: all 0.2s ease-out;
+                cursor: pointer;
+                flex-grow: 1;
             }
 
                 .city-item .text-name svg{
@@ -342,26 +371,39 @@ main{
                 background-color: rgba(0,0,0,0.05);
                 display: flex;
                 border-radius: 50%;
+                transition: all 0.2s ease-out;
+                cursor: pointer;
             }
-
-                .favorite-toggle svg{
-                    width: 24px;
-                    height: 24px;
+                .favorite-toggle:hover{
+                    transform: scale(1.1);
+                    background-color: rgba(0,0,0,0.1);
                 }
-
+                .favorite-toggle svg{
+                    width: 18px;
+                    height: 18px;
+                }
                     .favorite-toggle svg path{
                         stroke: rgba(0,0,0,0.2);
                     }
+            
+            .favorite-toggle.selected{
+                background-color: rgba(76, 117, 220, 1);
+            }
+                    .favorite-toggle svg path{
+                        stroke: rgba(0,0,0,0);
+                        fill: white;
+                    }
         
-        .city-item:hover{
-            padding: 24px 0 12px 12px;
+        .text-name:hover{
+            padding-left: 12px;
             color: rgba(76, 117, 220, 1);
+            background: linear-gradient(90deg, white, #f2f8fe, white);
         }
 
-        .city-item.selected {
+        .text-name.selected {
             color: rgba(76, 117, 220, 1);
             pointer-events: none;
         }
-            .city-item.selected .text-name svg{
+            .text-name.selected svg{
                 display: block;
             }

@@ -7,90 +7,89 @@ y la app le muestra el estado del tiempo actual en esa ciudad.
 */
 
 // objeto que simula la respuesta del servidor de clima
-const ciudades = [
+const ciudadesDatabase = [
     {
-        ciudad: 'Angola',
+        ciudad: 'Luanda',
         nubes: 12,
-        temperature:23,
-        humidity:57,
-        wind:2.57,
-        dia:true,
+        temperature: 23,
+        humidity: 57,
+        wind: 2.57,
+        dia: true,
     },
     {
         ciudad: 'Tokyo',
         nubes: 76,
-        temperature:16,
-        humidity:24,
-        wind:1.30,
-        dia:false,
+        temperature: 16,
+        humidity: 24,
+        wind: 1.30,
+        dia: false,
     },
     {
         ciudad: 'California',
         nubes: 50,
-        temperature:32,
-        humidity:37,
-        wind:1.80,
-        dia:true,
+        temperature: 32,
+        humidity: 37,
+        wind: 1.80,
+        dia: true,
     },
     {
         ciudad: 'Paris',
         nubes: 50,
-        temperature:27,
-        humidity:24,
-        wind:2.15,
-        dia:false,
+        temperature: 27,
+        humidity: 24,
+        wind: 2.15,
+        dia: false,
     },
 ]
 
-//Funcion para generar la clase que determina los estilos de la tarjeta
-// y la descripcion del clima
-const generateClassAndDescription = (ciudad)=>{
-    
+//Genera la clase CSS segun los datos del clima, y genera una descipcion humanizada del estado del tiempo
+const generateClassAndDescription = (ciudad) => {
+
     let classToAdd = '';
     let description = '';
 
-    if(ciudad.dia){
+    if (ciudad.dia) {
         classToAdd = 'dia';
         description += 'Día';
-        if(ciudad.nubes<40){
+        if (ciudad.nubes < 40) {
             classToAdd += '-0';
             description += ' Soleado';
-        }else if(ciudad.nubes>=40 && ciudad.nubes<75){
+        } else if (ciudad.nubes >= 40 && ciudad.nubes < 75) {
             classToAdd += '-50';
             description += ' Parcialmente Nublado';
-        }else{
+        } else {
             classToAdd += '-100';
             description += ' Nublado';
         }
-    }else{
+    } else {
         classToAdd += 'noche';
         description += 'Noche';
-        if(ciudad.nubes<40){
+        if (ciudad.nubes < 40) {
             classToAdd += '-0';
             description += ' Despejada';
-        }else if(ciudad.nubes>=40 && ciudad.nubes<75){
+        } else if (ciudad.nubes >= 40 && ciudad.nubes < 75) {
             classToAdd += '-50';
             description += ' Parcialmente Nublada';
-        }else{
+        } else {
             classToAdd += '-100';
             description += ' Nublada';
         }
     }
 
     return ({
-        class:classToAdd,
-        description:description
+        class: classToAdd,
+        description: description
     });
 }
 
-//Mostrar datos en UI
+//Mostrar datos en UI de una ciudad seleccionada
 const mainContainer = document.querySelector('main');
 const frontCityName = document.querySelector('#front-city-name');
 const dayDescription = document.querySelector('#day-description');
 const tempText = document.querySelector('#temperature-text');
 const humiText = document.querySelector('#humidity-text');
 const windText = document.querySelector('#wind-text');
-const mostrarDatos=(ciudad)=>{
+const mostrarDatos = (ciudad) => {
     const classAndDescription = generateClassAndDescription(ciudad);
     mainContainer.className = classAndDescription.class;
     frontCityName.innerText = ciudad.ciudad;
@@ -100,28 +99,76 @@ const mostrarDatos=(ciudad)=>{
     windText.innerText = ciudad.wind;
 }
 
-//Funcion para seleccionar ciudad
-const selectCity = (cityInfo, listItem)=>{
-    const listItems = document.querySelectorAll('.city-item');
-            listItems.forEach(element=>{
-                element.classList.remove('selected');
-            })
+// Guardar Favoritos
+let favoriteCities = [];
+if (localStorage.getItem('favoriteCities') !== null) { //se cargan los favoritos en caso de que existan
+    favoriteCities = Array.from(localStorage.getItem('favoriteCities').split(','));
+}
+const setFavorite = (cityName, favoriteToggle) => {
+    favoriteToggle.classList.toggle('selected');
+    if (favoriteToggle.classList.contains('selected')) {
+        let existeLaCiudad = false;
+        favoriteCities.forEach(c => {
+            if (cityName === c) {
+                existeLaCiudad = true;
+            }
+        })
+        if (!existeLaCiudad) {
+            if (favoriteCities[0] === '' || favoriteCities.length === 0) {
+                favoriteCities[0] = cityName;
+            } else {
+                favoriteCities.push(cityName);
+                console.log(`se guardo ${cityName}`)
+            }
+            localStorage.setItem('favoriteCities', favoriteCities);
+            displayFavorites();
+        }
+    } else {
+        const favoriteArray = Array.from(localStorage.getItem('favoriteCities').split(',')); // creo un array de las ciudades guardadas en LS separando el string en las ','
+        const newFavoriteArray = favoriteArray.filter((savedCity) => savedCity !== cityName);
+        localStorage.setItem('favoriteCities', newFavoriteArray);
+        favoriteCities = newFavoriteArray;
+        const circulosExistentes = document.querySelectorAll('.saved-city-circle');
+        circulosExistentes.forEach(circulo => {
+            if (circulo.innerText === `${cityName[0]}${cityName[1].toUpperCase()}`) {
+                circulo.remove();
+            }
+        })
+    }
+}
+
+//Seleccionar ciudad de la lista y llamar a Mostrar Datos en UI
+const selectCity = (cityInfo, listItem) => {
+    const listItems = document.querySelectorAll('.text-name');
+    listItems.forEach(element => {
+        element.classList.remove('selected');
+    })
     listItem.classList.add('selected');
+    const accesosDirectos = Array.from(document.getElementsByClassName('saved-city-circle'));
+    if (accesosDirectos.length > 0) {
+        accesosDirectos.forEach(a => {
+            if (a.innerText === `${cityInfo.ciudad[0]}${cityInfo.ciudad[1].toUpperCase()}`) {
+                a.classList.add('selected');
+            }else{
+                a.classList.remove('selected');
+            }
+        });
+    };
     optionsCard.animate([
-        {transform: 'translateX(0)', opacity: '1', offset: 0},
-        {transform: 'translateX(100%)', opacity: '0.3', offset: 1}
-    ],300);
-    setTimeout(()=>{
-        optionsCard.style.display='none';
-    },280);
+        { transform: 'translateX(0)', opacity: '1', offset: 0 },
+        { transform: 'translateX(100%)', opacity: '0.3', offset: 1 }
+    ], 300);
+    setTimeout(() => {
+        optionsCard.style.display = 'none';
+    }, 280);
     optionsAreActive = false;
     mostrarDatos(cityInfo);
 }
 
-//Listar ciudades
+//Crea la lista de ciudades disponibles y les asigna el eventListener correspondiente
 const listContainer = document.querySelector('.list-container');
-const generateCityList = ()=>{
-    ciudades.forEach((i)=>{
+const generateCityList = () => {
+    ciudadesDatabase.forEach((i) => {
         const newListItem = document.createElement('div');
         newListItem.className = 'city-item';
         newListItem.innerHTML = `
@@ -144,36 +191,88 @@ const generateCityList = ()=>{
                 </svg>
             </div>`;
         listContainer.append(newListItem);
-        newListItem.addEventListener('click', ()=>selectCity(i, newListItem));
+        const textName = newListItem.getElementsByClassName('text-name')[0];
+        textName.addEventListener('click', () => selectCity(i, textName)); // eventListener para que la ciudad sea seleccionable
+        const favoriteToggle = newListItem.getElementsByClassName('favorite-toggle')[0];
+        favoriteToggle.addEventListener('click', () => setFavorite(textName.innerText, favoriteToggle)) // eventListener para marcar la ciudad como favorita
     })
 }
 generateCityList();
 
-// Display options
+//Mostrar favoritos
+const displayFavorites = () => {
+    const cityNames = document.querySelectorAll('.text-name>p');
+    const stars = document.querySelectorAll('.favorite-toggle');
+    const favoritesHeaderContainer = document.querySelector('.saved-cities');
+    favoriteCities.forEach(city => {
+        cityNames.forEach((cityName, index) => {
+            console.log(cityName.innerText + ' analizada')
+            if (city === cityName.innerText) {
+                if (!stars[index].classList.contains('selected')) {
+                    stars[index].classList.add('selected');
+                }
+                const circulosExistentes = document.querySelectorAll('.saved-city-circle');
+                let circuloYaExiste = false;
+                circulosExistentes.forEach(circulo => {
+                    if (circulo.innerText === `${cityName.innerText[0]}${cityName.innerText[1].toUpperCase()}`) {
+                        circuloYaExiste = true;
+                    }
+                })
+                if (!circuloYaExiste) {
+                    const shortcut = document.createElement('p');
+                    shortcut.innerText = `${cityName.innerText[0]}${cityName.innerText[1]}`;
+                    favoritesHeaderContainer.appendChild(shortcut);
+                    shortcut.className = 'saved-city-circle';
+                    let cityInfoToDisplay;
+                    ciudadesDatabase.forEach(c => { // busco los datos que le corresponden a este acceso directo
+                        if (c.ciudad === cityName.innerText) {
+                            cityInfoToDisplay = c;
+                        }
+                    })
+                    // busco el listItem que debe mostrarse seleccionado
+                    let listItemToSelect;
+                    const listaCiudades = Array.from(document.getElementsByClassName('text-name'));
+                    listaCiudades.forEach(item => {
+                        const innerP = item.getElementsByTagName('p')[0];
+                        if (innerP.innerText === cityName.innerText) {
+                            listItemToSelect = item;
+                        }
+                    })
+                    shortcut.addEventListener('click', () => selectCity(cityInfoToDisplay, listItemToSelect)); // eventListener para que la ciudad sea seleccionable
+                }
+            }
+        })
+    })
+}
+displayFavorites();
+
+// Muestra/Oculta la lista de ciudades disponibles
 const switcher = document.querySelector('#city-selector');
 const optionsCard = document.querySelector('.options');
 let optionsAreActive = false;
 let ocultarCard;
-const switchCard = ()=>{
-    if(optionsAreActive){
+const switchCard = () => {
+    if (optionsAreActive) {
         optionsCard.animate([
-            {transform: 'translateX(0)', opacity: '1', offset: 0},
-            {transform: 'translateX(100%)', opacity: '0.3', offset: 1}
-        ],300);
-        ocultarCard = setTimeout(()=>{
-            optionsCard.style.display='none';
-        },280);
+            { transform: 'translateX(0)', opacity: '1', offset: 0 },
+            { transform: 'translateX(100%)', opacity: '0.3', offset: 1 }
+        ], 300);
+        ocultarCard = setTimeout(() => {
+            optionsCard.style.display = 'none';
+        }, 280);
         optionsAreActive = false;
-    }else{
+    } else {
         clearTimeout(ocultarCard);
-        optionsCard.style.display='block';
+        optionsCard.style.display = 'block';
         optionsCard.animate([
-            {transform: 'translateX(100%)', opacity: '0.3', offset: 0},
-            {transform: 'translateX(0)', opacity: '1', offset: 1}
-        ],300)
+            { transform: 'translateX(100%)', opacity: '0.3', offset: 0 },
+            { transform: 'translateX(0)', opacity: '1', offset: 1 }
+        ], 300)
         optionsAreActive = true;
     }
 }
 switcher.addEventListener('click', switchCard);
 
-selectCity(ciudades[0], document.querySelector('.city-item'));
+
+// Por defecto muestra el clima de la primera ciudad de la lista
+selectCity(ciudadesDatabase[0], document.querySelector('.text-name'));
