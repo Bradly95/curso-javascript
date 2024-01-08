@@ -338,8 +338,19 @@ main{
 
     .list-container{
         height: 100%;
-        overflow: scroll;
+        overflow-y: scroll;
+        overflow-x: hidden;
     }
+        .list-container::-webkit-scrollbar{
+            appearance: none;
+            width: 8px;
+        }
+        .list-container::-webkit-scrollbar-thumb{
+            background-color: rgba(0,0,0,0.05);
+        }
+        .list-container::-webkit-scrollbar-track{
+            background-color: transparent;
+        }
 
         .city-item{
             display: flex;
