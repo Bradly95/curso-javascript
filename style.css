@@ -324,7 +324,6 @@ main{
     left: 0;
     color: #222;
     background-color: white;
-    padding: 48px;
 }
 
     .list-titles{
@@ -334,12 +333,14 @@ main{
         text-transform: uppercase;
         font-size: 12px;
         margin-bottom: 12px;
+        padding: 0 32px;
     }
 
     .list-container{
         height: 100%;
         overflow-y: scroll;
-        overflow-x: visible;
+        overflow-x: hidden;
+        padding: 0 32px;
     }
         .list-container::-webkit-scrollbar{
             appearance: none;
