@@ -121,6 +121,7 @@ const setFavorite = (cityName, favoriteToggle) => {
             }
             localStorage.setItem('favoriteCities', favoriteCities);
             displayFavorites();
+            mostrarAccesoDirectoActivo();
         };
     } else {
         const favoriteArray = Array.from(localStorage.getItem('favoriteCities').split(',')); // creo un array de las ciudades guardadas en LS separando el string en las ','
@@ -134,19 +135,24 @@ const setFavorite = (cityName, favoriteToggle) => {
             }
         })
     }
-    mostrarAccesoDirectoActivo();
 }
 
 //Mostrar el acceso directo activo
 const mostrarAccesoDirectoActivo = ()=>{
     const accesosDirectos = Array.from(document.getElementsByClassName('saved-city-circle'));
+    const listItems = Array.from(document.getElementsByClassName('text-name'));
     if (accesosDirectos.length > 0) {
-        accesosDirectos.forEach(a => {
-            if (a.innerText === `${cityInfo.ciudad[0]}${cityInfo.ciudad[1].toUpperCase()}`) {
-                a.classList.add('selected');
-            } else {
-                a.classList.remove('selected');
-            }
+        accesosDirectos.forEach(accesoDirecto => {
+            listItems.forEach(item=>{
+                if(item.classList.contains('selected')){
+                    const cityName = item.getElementsByTagName('p')[0];
+                    if (accesoDirecto.innerText === `${cityName.innerText[0]}${cityName.innerText[1].toUpperCase()}`) {
+                        accesoDirecto.classList.add('selected');
+                    } else {
+                        accesoDirecto.classList.remove('selected');
+                    }
+                }
+            })
         });
     };
 }
