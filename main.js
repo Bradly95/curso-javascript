@@ -112,17 +112,16 @@ const setFavorite = (cityName, favoriteToggle) => {
             if (cityName === c) {
                 existeLaCiudad = true;
             }
-        })
+        });
         if (!existeLaCiudad) {
             if (favoriteCities[0] === '' || favoriteCities.length === 0) {
                 favoriteCities[0] = cityName;
             } else {
                 favoriteCities.push(cityName);
-                console.log(`se guardo ${cityName}`)
             }
             localStorage.setItem('favoriteCities', favoriteCities);
             displayFavorites();
-        }
+        };
     } else {
         const favoriteArray = Array.from(localStorage.getItem('favoriteCities').split(',')); // creo un array de las ciudades guardadas en LS separando el string en las ','
         const newFavoriteArray = favoriteArray.filter((savedCity) => savedCity !== cityName);
@@ -135,6 +134,21 @@ const setFavorite = (cityName, favoriteToggle) => {
             }
         })
     }
+    mostrarAccesoDirectoActivo();
+}
+
+//Mostrar el acceso directo activo
+const mostrarAccesoDirectoActivo = ()=>{
+    const accesosDirectos = Array.from(document.getElementsByClassName('saved-city-circle'));
+    if (accesosDirectos.length > 0) {
+        accesosDirectos.forEach(a => {
+            if (a.innerText === `${cityInfo.ciudad[0]}${cityInfo.ciudad[1].toUpperCase()}`) {
+                a.classList.add('selected');
+            } else {
+                a.classList.remove('selected');
+            }
+        });
+    };
 }
 
 //Seleccionar ciudad de la lista y llamar a Mostrar Datos en UI
@@ -144,16 +158,7 @@ const selectCity = (cityInfo, listItem) => {
         element.classList.remove('selected');
     })
     listItem.classList.add('selected');
-    const accesosDirectos = Array.from(document.getElementsByClassName('saved-city-circle'));
-    if (accesosDirectos.length > 0) {
-        accesosDirectos.forEach(a => {
-            if (a.innerText === `${cityInfo.ciudad[0]}${cityInfo.ciudad[1].toUpperCase()}`) {
-                a.classList.add('selected');
-            }else{
-                a.classList.remove('selected');
-            }
-        });
-    };
+    mostrarAccesoDirectoActivo();
     optionsCard.animate([
         { transform: 'translateX(0)', opacity: '1', offset: 0 },
         { transform: 'translateX(100%)', opacity: '0.3', offset: 1 }
@@ -206,7 +211,6 @@ const displayFavorites = () => {
     const favoritesHeaderContainer = document.querySelector('.saved-cities');
     favoriteCities.forEach(city => {
         cityNames.forEach((cityName, index) => {
-            console.log(cityName.innerText + ' analizada')
             if (city === cityName.innerText) {
                 if (!stars[index].classList.contains('selected')) {
                     stars[index].classList.add('selected');
@@ -276,3 +280,4 @@ switcher.addEventListener('click', switchCard);
 
 // Por defecto muestra el clima de la primera ciudad de la lista
 selectCity(ciudadesDatabase[0], document.querySelector('.text-name'));
+mostrarAccesoDirectoActivo();
