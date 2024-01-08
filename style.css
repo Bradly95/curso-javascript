@@ -339,7 +339,7 @@ main{
     .list-container{
         height: 100%;
         overflow-y: scroll;
-        overflow-x: hidden;
+        overflow-x: visible;
     }
         .list-container::-webkit-scrollbar{
             appearance: none;
