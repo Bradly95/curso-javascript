@@ -56,7 +56,12 @@ const weatherFetcher = async (cityName) => {
         weatherFromFetch = await response.json();
         return prepareResponse();
     } catch (error) {
-        console.error(error);
+        swal({
+            title: "Conexión fallida",
+            text: "Reintenta más tarde",
+            icon: "error",
+            button: "Entiendo",
+          });
     }
 }
 
