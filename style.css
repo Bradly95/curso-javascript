@@ -4,6 +4,27 @@
     box-sizing: border-box;
 }
 
+.swal-modal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    top:50%;
+    left:50%;
+    padding: 48px;
+    transform: translate(-50%,-50%);
+    border-radius: 8px;
+}
+
+.swal-button {
+    padding: 12px 24px;
+    border-radius: 4px;
+    background-color: var(--card-soleada-color);
+    font-size: 12px;
+    border: none;
+    color: white;
+  }
+
 html{
     /* colores para el dia */
     --dia-background-color:#EFF7FF;

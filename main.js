@@ -6,55 +6,32 @@ y la app le muestra el estado del tiempo actual en esa ciudad.
 *********
 */
 
-// objeto que simula la respuesta del servidor de clima
-const ciudadesDatabase = [
-    {
-        ciudad: 'Luanda',
-        nubes: 12,
-        temperature: 23,
-        humidity: 57,
-        wind: 2.57,
-        dia: true,
-    },
-    {
-        ciudad: 'Tokyo',
-        nubes: 76,
-        temperature: 16,
-        humidity: 24,
-        wind: 1.30,
-        dia: false,
-    },
-    {
-        ciudad: 'California',
-        nubes: 50,
-        temperature: 32,
-        humidity: 37,
-        wind: 1.80,
-        dia: true,
-    },
-    {
-        ciudad: 'Paris',
-        nubes: 50,
-        temperature: 27,
-        humidity: 24,
-        wind: 2.15,
-        dia: false,
-    },
-]
+import { weatherFetcher } from "./fetcher.js";
 
-//Genera la clase CSS segun los datos del clima, y genera una descipcion humanizada del estado del tiempo
-const generateClassAndDescription = (ciudad) => {
+swal({
+    title: "Bienvenid@ a la entrega final",
+    text: "Gracias por calificarme",
+    icon: "info",
+    button: "Estoy list@ para evaluarte",
+  });
+
+// objeto que simula la respuesta del servidor de weather
+const citiesDatabase = ['California','Tokyo','Irak','Moscu', 'Santiago de Chile', 'Luanda'];
+
+//Genera la clase CSS segun los datos del clima para mostrar una animacion svg distinta, y 
+//genera una descipcion humanizada del estado del tiempo
+const generateClassAndDescription = (cityWeather) => {
 
     let classToAdd = '';
     let description = '';
 
-    if (ciudad.dia) {
+    if (cityWeather.isDaytime) {
         classToAdd = 'dia';
         description += 'Día';
-        if (ciudad.nubes < 40) {
+        if (cityWeather.clouds < 40) {
             classToAdd += '-0';
             description += ' Soleado';
-        } else if (ciudad.nubes >= 40 && ciudad.nubes < 75) {
+        } else if (cityWeather.clouds >= 40 && cityWeather.clouds < 75) {
             classToAdd += '-50';
             description += ' Parcialmente Nublado';
         } else {
@@ -64,10 +41,10 @@ const generateClassAndDescription = (ciudad) => {
     } else {
         classToAdd += 'noche';
         description += 'Noche';
-        if (ciudad.nubes < 40) {
+        if (cityWeather.clouds < 40) {
             classToAdd += '-0';
             description += ' Despejada';
-        } else if (ciudad.nubes >= 40 && ciudad.nubes < 75) {
+        } else if (cityWeather.clouds >= 40 && cityWeather.clouds < 75) {
             classToAdd += '-50';
             description += ' Parcialmente Nublada';
         } else {
@@ -89,14 +66,14 @@ const dayDescription = document.querySelector('#day-description');
 const tempText = document.querySelector('#temperature-text');
 const humiText = document.querySelector('#humidity-text');
 const windText = document.querySelector('#wind-text');
-const mostrarDatos = (ciudad) => {
-    const classAndDescription = generateClassAndDescription(ciudad);
+const displayData = (cityWeather) => {
+    const classAndDescription = generateClassAndDescription(cityWeather);
     mainContainer.className = classAndDescription.class;
-    frontCityName.innerText = ciudad.ciudad;
+    frontCityName.innerText = cityWeather.cityName;
     dayDescription.innerText = classAndDescription.description;
-    tempText.innerText = ciudad.temperature;
-    humiText.innerText = ciudad.humidity;
-    windText.innerText = ciudad.wind;
+    tempText.innerText = cityWeather.temperature;
+    humiText.innerText = cityWeather.humidity;
+    windText.innerText = cityWeather.wind;
 }
 
 // Guardar Favoritos
@@ -107,13 +84,13 @@ if (localStorage.getItem('favoriteCities') !== null) { //se cargan los favoritos
 const setFavorite = (cityName, favoriteToggle) => {
     favoriteToggle.classList.toggle('selected');
     if (favoriteToggle.classList.contains('selected')) {
-        let existeLaCiudad = false;
+        let cityAlreadyExists = false;
         favoriteCities.forEach(c => {
             if (cityName === c) {
-                existeLaCiudad = true;
+                cityAlreadyExists = true;
             }
         });
-        if (!existeLaCiudad) {
+        if (!cityAlreadyExists) {
             if (favoriteCities[0] === '' || favoriteCities.length === 0) {
                 favoriteCities[0] = cityName;
             } else {
@@ -121,30 +98,30 @@ const setFavorite = (cityName, favoriteToggle) => {
             }
             localStorage.setItem('favoriteCities', favoriteCities);
             displayFavorites();
-            mostrarAccesoDirectoActivo();
+            displayActiveShorcut();
         };
     } else {
         const favoriteArray = Array.from(localStorage.getItem('favoriteCities').split(',')); // creo un array de las ciudades guardadas en LS separando el string en las ','
         const newFavoriteArray = favoriteArray.filter((savedCity) => savedCity !== cityName);
         localStorage.setItem('favoriteCities', newFavoriteArray);
         favoriteCities = newFavoriteArray;
-        const circulosExistentes = document.querySelectorAll('.saved-city-circle');
-        circulosExistentes.forEach(circulo => {
-            if (circulo.innerText === `${cityName[0]}${cityName[1].toUpperCase()}`) {
-                circulo.remove();
+        const existingCircles = document.querySelectorAll('.saved-city-circle');
+        existingCircles.forEach(circle => {
+            if (circle.innerText === `${cityName[0]}${cityName[1].toUpperCase()}`) {
+                circle.remove();
             }
         })
     }
 }
 
 //Mostrar el acceso directo activo
-const mostrarAccesoDirectoActivo = ()=>{
+const displayActiveShorcut = () => {
     const accesosDirectos = Array.from(document.getElementsByClassName('saved-city-circle'));
     const listItems = Array.from(document.getElementsByClassName('text-name'));
     if (accesosDirectos.length > 0) {
         accesosDirectos.forEach(accesoDirecto => {
-            listItems.forEach(item=>{
-                if(item.classList.contains('selected')){
+            listItems.forEach(item => {
+                if (item.classList.contains('selected')) {
                     const cityName = item.getElementsByTagName('p')[0];
                     if (accesoDirecto.innerText === `${cityName.innerText[0]}${cityName.innerText[1].toUpperCase()}`) {
                         accesoDirecto.classList.add('selected');
@@ -158,13 +135,13 @@ const mostrarAccesoDirectoActivo = ()=>{
 }
 
 //Seleccionar ciudad de la lista y llamar a Mostrar Datos en UI
-const selectCity = (cityInfo, listItem) => {
+const selectCity = async (cityName, listItem) => {
     const listItems = document.querySelectorAll('.text-name');
     listItems.forEach(element => {
         element.classList.remove('selected');
     })
     listItem.classList.add('selected');
-    mostrarAccesoDirectoActivo();
+    displayActiveShorcut();
     optionsCard.animate([
         { transform: 'translateX(0)', opacity: '1', offset: 0 },
         { transform: 'translateX(100%)', opacity: '0.3', offset: 1 }
@@ -173,13 +150,13 @@ const selectCity = (cityInfo, listItem) => {
         optionsCard.style.display = 'none';
     }, 280);
     optionsAreActive = false;
-    mostrarDatos(cityInfo);
+    displayData(await weatherFetcher(cityName));
 }
 
 //Crea la lista de ciudades disponibles y les asigna el eventListener correspondiente
 const listContainer = document.querySelector('.list-container');
 const generateCityList = () => {
-    ciudadesDatabase.forEach((i) => {
+    citiesDatabase.forEach((i) => {
         const newListItem = document.createElement('div');
         newListItem.className = 'city-item';
         newListItem.innerHTML = `
@@ -194,7 +171,7 @@ const generateCityList = () => {
                     </clipPath>
                     </defs>
                 </svg>
-                <p>${i.ciudad}</p>
+                <p>${i}</p>
             </div>
             <div class="favorite-toggle">
                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
@@ -221,28 +198,28 @@ const displayFavorites = () => {
                 if (!stars[index].classList.contains('selected')) {
                     stars[index].classList.add('selected');
                 }
-                const circulosExistentes = document.querySelectorAll('.saved-city-circle');
-                let circuloYaExiste = false;
-                circulosExistentes.forEach(circulo => {
-                    if (circulo.innerText === `${cityName.innerText[0]}${cityName.innerText[1].toUpperCase()}`) {
-                        circuloYaExiste = true;
+                const existingCircles = document.querySelectorAll('.saved-city-circle');
+                let circleAlreadyExists = false;
+                existingCircles.forEach(circle => {
+                    if (circle.innerText === `${cityName.innerText[0]}${cityName.innerText[1].toUpperCase()}`) {
+                        circleAlreadyExists = true;
                     }
                 })
-                if (!circuloYaExiste) {
+                if (!circleAlreadyExists) {
                     const shortcut = document.createElement('p');
                     shortcut.innerText = `${cityName.innerText[0]}${cityName.innerText[1]}`;
                     favoritesHeaderContainer.appendChild(shortcut);
                     shortcut.className = 'saved-city-circle';
                     let cityInfoToDisplay;
-                    ciudadesDatabase.forEach(c => { // busco los datos que le corresponden a este acceso directo
-                        if (c.ciudad === cityName.innerText) {
-                            cityInfoToDisplay = c;
+                    citiesDatabase.forEach(city => { // busco los datos que le corresponden a este acceso directo
+                        if (city === cityName.innerText) {
+                            cityInfoToDisplay = city;
                         }
                     })
                     // busco el listItem que debe mostrarse seleccionado
                     let listItemToSelect;
-                    const listaCiudades = Array.from(document.getElementsByClassName('text-name'));
-                    listaCiudades.forEach(item => {
+                    const citiesList = Array.from(document.getElementsByClassName('text-name'));
+                    citiesList.forEach(item => {
                         const innerP = item.getElementsByTagName('p')[0];
                         if (innerP.innerText === cityName.innerText) {
                             listItemToSelect = item;
@@ -260,19 +237,19 @@ displayFavorites();
 const switcher = document.querySelector('#city-selector');
 const optionsCard = document.querySelector('.options');
 let optionsAreActive = false;
-let ocultarCard;
+let hideCard;
 const switchCard = () => {
     if (optionsAreActive) {
         optionsCard.animate([
             { transform: 'translateX(0)', opacity: '1', offset: 0 },
             { transform: 'translateX(100%)', opacity: '0.3', offset: 1 }
         ], 300);
-        ocultarCard = setTimeout(() => {
+        hideCard = setTimeout(() => {
             optionsCard.style.display = 'none';
         }, 280);
         optionsAreActive = false;
     } else {
-        clearTimeout(ocultarCard);
+        clearTimeout(hideCard);
         optionsCard.style.display = 'block';
         optionsCard.animate([
             { transform: 'translateX(100%)', opacity: '0.3', offset: 0 },
@@ -285,5 +262,5 @@ switcher.addEventListener('click', switchCard);
 
 
 // Por defecto muestra el clima de la primera ciudad de la lista
-selectCity(ciudadesDatabase[0], document.querySelector('.text-name'));
-mostrarAccesoDirectoActivo();
+selectCity(citiesDatabase[0], document.querySelector('.text-name'));
+displayActiveShorcut();
