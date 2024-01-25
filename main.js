@@ -16,7 +16,7 @@ swal({
   });
 
 // objeto que simula la respuesta del servidor de weather
-const citiesDatabase = ['California','Tokyo','Irak','Moscu', 'Santiago de Chile', 'Luanda'];
+const citiesDatabase = ['Londres','Nueva York','Tokio','Sidney','Moscu','Luanda','El Cairo'];
 
 //Genera la clase CSS segun los datos del clima para mostrar una animacion svg distinta, y 
 //genera una descipcion humanizada del estado del tiempo
