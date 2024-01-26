@@ -142,7 +142,7 @@ main{
 }
 
 #fetch-error{
-    display: flex;
+    display: none;
     position: absolute;
     top: 0;
     left: 0;
