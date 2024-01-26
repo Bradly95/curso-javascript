@@ -66,14 +66,20 @@ const dayDescription = document.querySelector('#day-description');
 const tempText = document.querySelector('#temperature-text');
 const humiText = document.querySelector('#humidity-text');
 const windText = document.querySelector('#wind-text');
+const errorFetch = document.querySelector('#fetch-error');
 const displayData = (cityWeather) => {
-    const classAndDescription = generateClassAndDescription(cityWeather);
-    mainContainer.className = classAndDescription.class;
-    frontCityName.innerText = cityWeather.cityName;
-    dayDescription.innerText = classAndDescription.description;
-    tempText.innerText = cityWeather.temperature;
-    humiText.innerText = cityWeather.humidity;
-    windText.innerText = cityWeather.wind;
+    if(!cityWeather){ // en caso de que no se pueda hacer el fetch mostrar el error sin romper el sistema.
+        errorFetch.style.display='flex';
+    }else{
+        errorFetch.style.display='none';
+        const classAndDescription = generateClassAndDescription(cityWeather);
+        mainContainer.className = classAndDescription.class;
+        frontCityName.innerText = cityWeather.cityName;
+        dayDescription.innerText = classAndDescription.description;
+        tempText.innerText = cityWeather.temperature;
+        humiText.innerText = cityWeather.humidity;
+        windText.innerText = cityWeather.wind;
+    }
 }
 
 // Guardar Favoritos
